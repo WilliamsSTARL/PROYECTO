@@ -534,8 +534,11 @@
                             </p>
                         </div>
 
-                        
-                        <center><button type="submit" class="logbtn">ENVIAR</button></center>
+                        <div id="acciones_alumno" class="acciones_alumno" >
+                            <button type="button" class="btn btn-danger" id="eliminar_alumno">Eliminar</button>
+                            <button type="submit" class="btn btn-dark" id="modificar_alumno">Modificar</button>
+                        </div>
+                        <center><button type="submit" id="logbtn" class="logbtn">ENVIAR</button></center>
                     </div>
                 </form>
             </div>
@@ -544,3 +547,39 @@
 
 </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const idAlumno = new URLSearchParams(window.location.search).get('usuario_id');
+        document.getElementById('eliminar_alumno').addEventListener('click', function() {
+            if (confirm('¿Estás seguro de que deseas eliminar este anexo?')) {
+                fetch('php/eliminar_anexo.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'id_alumno=' + idAlumno + '&anexo=3'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Anexo eliminado correctamente.');
+                    location.reload();
+                })
+                .catch(error => {
+                    alert('Error al eliminar el anexo.');
+                });
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idAlumno = urlParams.get('usuario_id');
+        const accionesAlumno = document.getElementById('acciones_alumno');
+        const botonEnviar = document.getElementById('logbtn');
+
+        accionesAlumno.style.display = idAlumno ? 'block' : 'none';
+        botonEnviar.style.display = idAlumno ? 'none' : 'block';
+    });
+</script>

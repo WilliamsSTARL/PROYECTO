@@ -65,7 +65,6 @@ if (isset($_FILES["Foto"]) && $_FILES["Foto"]["tmp_name"] != "") {
 // Inserta los datos en la base de datos
 $sql = "INSERT INTO legajo_alumno (apellido, nombre, dni, domicilio, localidad, foto, telefono, email, tutor, curso, observaciones, ficha_inscripcion, dni_alumno, cuil_alumno, certificado_nacimiento, ficha_salud, vacunas, certificado_salud, certificado_oftalmologico, dni_tutor, certificado_aprobacion, otros, Fecha_nacimiento, Lugar, Division, `Odontologico`, `PASE`, `AImagen`)
 VALUES ('$apellido', '$nombre', '$dni', '$domicilio', '$localidad', '$foto', '$telefono', '$email', '$tutor', '$curso', '$observaciones', '$ficha_inscripcion', '$dni_alumno', '$cuil_alumno', '$certificado_nacimiento', '$ficha_salud', '$vacunas', '$certificado_salud', '$certificado_oftalmologico', '$dni_tutor', '$certificado_aprobacion', '$otros', '$fecha', '$lugar', '$division', '$Odontologico', '$PASE', '$AImagen')";
-// Consulta para obtener el ID del alumno basado en el DNI proporcionado
 $sql = "SELECT id_alumno FROM lista_alumnos WHERE dni = '$dni'";
 $result = $conn->query($sql);
 

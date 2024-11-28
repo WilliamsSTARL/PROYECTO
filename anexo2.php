@@ -1,8 +1,5 @@
 <?php
-$host = 'localhost';
-$dbname = 'eesn7';
-$username = 'root';
-$password = '';
+include 'conexion.php';
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -17,15 +14,7 @@ function logError($message) {
     error_log($message . "\n", 3, $logFile);
 }
 
-$conn = mysqli_connect($host, $username, $password, $dbname);
-
-if (!$conn) {
-    $error = "Conexión fallida: " . mysqli_connect_error();
-    logError($error);
-    die($error);
-}
-
-try {
+$id_alumno = $_POST['id_alumno'] ?? null;
 $apellido_alumno = $_POST['apellido_alumno'] ?? 'No especificado';
 $nombre_alumno = $_POST['nombre_alumno'] ?? 'No especificado';
 $fecha_nacimiento = isset($_POST['fecha_nacimiento_alumno']) ? date('Y-m-d', strtotime($_POST['fecha_nacimiento_alumno'])) : '0000-00-00';
@@ -164,10 +153,9 @@ if (isset($_FILES['url_firma_responsable']) && $_FILES['url_firma_responsable'][
     echo "No se ha subido ninguna firma.";
     $url_firma_responsable = 'No especificado'; 
 }
+
 $aclaracion_firma = $_POST['aclaracion_firma'];
 $fecha_inscripcion = isset($_POST['fecha_inscripcion']) ? date('Y-m-d', strtotime($_POST['fecha_inscripcion'])) : '0000-00-00';
-
-
 $responsable1_vinculo = $_POST['responsable_1_vinculo'];
 $responsable1_apellido = $_POST['responsable_1_apellido'];
 $responsable1_nombre = $_POST['responsable_1_nombre'];
@@ -264,10 +252,10 @@ $sql_responsable1 = "INSERT INTO responsable_1_alumno (
     '$responsable1_email'
 );";
 
-if (mysqli_query($conn, $sql_responsable1)) {
+if (mysqli_query($conexion, $sql_responsable1)) {
     echo "Datos del responsable 1 insertados correctamente.";
 } else {
-    $error = "Error al insertar los datos del responsable 1: " . mysqli_error($conn);
+    $error = "Error al insertar los datos del responsable 1: " . mysqli_error($conexion);
     logError($error);
     echo $error;
 }
@@ -368,71 +356,98 @@ $sql_responsable2 = "INSERT INTO responsable_2_alumno (
     '$responsable2_email'
 );";
 
-if (mysqli_query($conn, $sql_responsable2)) {
+if (mysqli_query($conexion, $sql_responsable2)) {
     echo "Datos del responsable 2 insertados correctamente.";
 } else {
-    $error = "Error al insertar los datos del responsable 2: " . mysqli_error($conn);
+    $error = "Error al insertar los datos del responsable 2: " . mysqli_error($conexion);
     logError($error);
     echo $error;
 }
 
-$sql = "INSERT INTO ficha_inscripcion (
-    nombre_alumno, apellido_alumno, fecha_nacimiento, tiene_dni_argentino, nro_dni_argentino, cuil_alumno, posee_cpi, tipo_documento_extranjero, nro_documento_extranjero, identidad_genero, 
-    calle, nro_calle, piso_torre, entre_calles, otro_dato, provincia_actual, distrito, localidad, telefono, telefono_celular, 
-    lugar_nacimiento, nacionalidad, provincia_nacimiento, distrito_BA, localidad_BA, tiene_hermanos, cantidad_hermanos, habla_lengua_indigena, habla_otras_lenguas, descendiente_originario, 
-    percibe_auh, percibe_progresar, trasporte_pie_bicicleta, trasporte_escolar, trasporte_colectivo, trasporte_tren, trasporte_particular, trasporte_taxi, transporte_otro, hijos_menores, 
-    asisten_maternal, tiene_obra_social, nombre_obra_social, nro_afiliado, antecedente_asma, antecedente_celiaquia, antecedente_cardiaco, antecedente_diabetes, antecedente_presion_alta, antecedente_convulsiones, 
-    antecedente_alteracion_sanguinea, antecedente_quemaduras_graves, antecedente_organos, antecedente_oncologico, antecedente_inmunodeficiencia, antecedente_fracturas, antecedente_huesos, antecedente_traumatismos, antecedente_problemas_piel, 
-    ejercicio_desmayo, ejercicio_dolor_pecho, ejercicio_mareos, ejercicio_mayor_cansancio, ejercicio_palpitaciones, ejercicio_dificultad_respirar, internacion_comun, internacion_intensiva, cant_veces_internado, causa_internacion, 
-    antecedente_alergia_grave, alergia_medicamento, internacion_medicamento, alergia_vacuna, internacion_vacuna, alergia_alimento, internacion_alimento, alergia_insectos, internacion_insecto, alergia_estacional, 
-    internacion_estacional, alergia_otras, internacion_otras, disminucion_auditiva, usa_audifonos, disminucion_visual, usa_lentes, recibe_medicacion, tipo_medicacion, recibio_operacion, 
-    motivo_operacion, fecha_operacion, antecedente_fam_muerte_subita, antecedente_fam_diabetes, antecedente_fam_cardiacos, antecedente_fam_tos_cronica, antecedente_fam_celiaco, establecimiento_actual_distrito, establecimiento_actual_nombre, establecimiento_actual_nro, 
-    establecimiento_actual_gestion, establecimiento_procedencia_pais, establecimiento_procedencia_provincia, establecimiento_procedencia_distrito, establecimiento_procedencia_modalidad, establecimiento_procedencia_gestion, establecimiento_procedencia_dependencia, establecimiento_procedencia_nombre, establecimiento_procedencia_nro, inscripcion_modalidad, 
-    inscripcion_orientacion, inscripcion_turno, inscripcion_jornada, inscripcion_año, inscripcion_condicion, inscripcion_inclusion, tipo_inclusion, inscripcion_asistente_externo, complementario_centro_educativo, complementario_educacion_fisica, 
-    complementario_educacion_estetica, servicio_alimentario, url_firma_responsable, aclaracion_firma, fecha_inscripcion
-) VALUES (
-    '$nombre_alumno', '$apellido_alumno', '$fecha_nacimiento', '$tiene_dni_argentino', '$nro_dni_argentino', '$cuil_alumno', '$posee_cpi', '$tipo_documento_extranjero', '$nro_documento_extranjero', '$identidad_genero', 
-    '$calle', '$nro_calle', '$piso_torre', '$entre_calles', '$otro_dato', '$provincia_actual', '$distrito', '$localidad', '$telefono', '$telefono_celular', 
-    '$lugar_nacimiento', '$nacionalidad', '$provincia_nacimiento', '$distrito_BA', '$localidad_BA', '$tiene_hermanos', '$cantidad_hermanos', '$habla_lengua_indigena', '$habla_otras_lenguas', '$descendiente_originario', 
-    '$percibe_auh', '$percibe_progresar', '$trasporte_pie_bicicleta', '$trasporte_escolar', '$trasporte_colectivo', '$trasporte_tren', '$trasporte_particular', '$trasporte_taxi', '$transporte_otro', '$hijos_menores', 
-    '$asisten_maternal', '$tiene_obra_social', '$nombre_obra_social', '$nro_afiliado', '$antecedente_asma', '$antecedente_celiaquia', '$antecedente_cardiaco', '$antecedente_diabetes', '$antecedente_presion_alta', '$antecedente_convulsiones', 
-    '$antecedente_alteracion_sanguinea', '$antecedente_quemaduras_graves', '$antecedente_organos', '$antecedente_oncologico', '$antecedente_inmunodeficiencia', '$antecedente_fracturas', '$antecedente_huesos', '$antecedente_traumatismos', '$antecedente_problemas_piel', 
-    '$ejercicio_desmayo', '$ejercicio_dolor_pecho', '$ejercicio_mareos', '$ejercicio_mayor_cansancio', '$ejercicio_palpitaciones', '$ejercicio_dificultad_respirar', '$internacion_comun', '$internacion_intensiva', '$cant_veces_internado', '$causa_internacion', 
-    '$antecedente_alergia_grave', '$alergia_medicamento', '$internacion_medicamento', '$alergia_vacuna', '$internacion_vacuna', '$alergia_alimento', '$internacion_alimento', '$alergia_insectos', '$internacion_insecto', '$alergia_estacional', 
-    '$internacion_estacional', '$alergia_otras', '$internacion_otras', '$disminucion_auditiva', '$usa_audifonos', '$disminucion_visual', '$usa_lentes', '$recibe_medicacion', '$tipo_medicacion', '$recibio_operacion', 
-    '$motivo_operacion', '$fecha_operacion', '$antecedente_fam_muerte_subita', '$antecedente_fam_diabetes', '$antecedente_fam_cardiacos', '$antecedente_fam_tos_cronica', '$antecedente_fam_celiaco', '$establecimiento_actual_distrito', '$establecimiento_actual_nombre', '$establecimiento_actual_nro', 
-    '$establecimiento_actual_gestion', '$establecimiento_procedencia_pais', '$establecimiento_procedencia_provincia', '$establecimiento_procedencia_distrito', '$establecimiento_procedencia_modalidad', '$establecimiento_procedencia_gestion', '$establecimiento_procedencia_dependencia', '$establecimiento_procedencia_nombre', '$establecimiento_procedencia_nro', '$inscripcion_modalidad', 
-    '$inscripcion_orientacion', '$inscripcion_turno', '$inscripcion_jornada', '$inscripcion_año', '$inscripcion_condicion', '$inscripcion_inclusion', '$tipo_inclusion', '$inscripcion_asistente_externo', '$complementario_centro_educativo', '$complementario_educacion_fisica', 
-    '$complementario_educacion_estetica', '$servicio_alimentario', '$url_firma_responsable', '$aclaracion_firma', '$fecha_inscripcion'
-)";
+$id_alumno = $_POST['id_alumno'] ?? null;
 
 
-if (mysqli_query($conn, $sql)) {
-    echo "Registro insertado correctamente.";
-    $sql_check = "SELECT id FROM estado_anexo WHERE fk_alumno = (SELECT id_alumno FROM lista_alumnos WHERE dni = '$nro_dni_argentino')";
-    $result_check = mysqli_query($conn, $sql_check);
-    if (mysqli_num_rows($result_check) > 0) {
-        $sql_estado_anexo = "UPDATE estado_anexo SET anexo_2 = 'si' WHERE fk_alumno = (SELECT id_alumno FROM lista_alumnos WHERE dni = '$nro_dni_argentino')";
+    $sql_modificar = "UPDATE ficha_inscripcion SET
+        nombre_alumno = '$nombre_alumno', apellido_alumno = '$apellido_alumno', fecha_nacimiento = '$fecha_nacimiento', tiene_dni_argentino = '$tiene_dni_argentino', nro_dni_argentino = '$nro_dni_argentino', cuil_alumno = '$cuil_alumno', posee_cpi = '$posee_cpi', tipo_documento_extranjero = '$tipo_documento_extranjero', nro_documento_extranjero = '$nro_documento_extranjero', identidad_genero = '$identidad_genero', 
+        calle = '$calle', nro_calle = '$nro_calle', piso_torre = '$piso_torre', entre_calles = '$entre_calles', otro_dato = '$otro_dato', provincia_actual = '$provincia_actual', distrito = '$distrito', localidad = '$localidad', telefono = '$telefono', telefono_celular = '$telefono_celular', 
+        lugar_nacimiento = '$lugar_nacimiento', nacionalidad = '$nacionalidad', provincia_nacimiento = '$provincia_nacimiento', distrito_BA = '$distrito_BA', localidad_BA = '$localidad_BA', tiene_hermanos = '$tiene_hermanos', cantidad_hermanos = '$cantidad_hermanos', habla_lengua_indigena = '$habla_lengua_indigena', habla_otras_lenguas = '$habla_otras_lenguas', descendiente_originario = '$descendiente_originario', 
+        percibe_auh = '$percibe_auh', percibe_progresar = '$percibe_progresar', trasporte_pie_bicicleta = '$trasporte_pie_bicicleta', trasporte_escolar = '$trasporte_escolar', trasporte_colectivo = '$trasporte_colectivo', trasporte_tren = '$trasporte_tren', trasporte_particular = '$trasporte_particular', trasporte_taxi = '$trasporte_taxi', transporte_otro = '$transporte_otro', hijos_menores = '$hijos_menores', 
+        asisten_maternal = '$asisten_maternal', tiene_obra_social = '$tiene_obra_social', nombre_obra_social = '$nombre_obra_social', nro_afiliado = '$nro_afiliado', antecedente_asma = '$antecedente_asma', antecedente_celiaquia = '$antecedente_celiaquia', antecedente_cardiaco = '$antecedente_cardiaco', antecedente_diabetes = '$antecedente_diabetes', antecedente_presion_alta = '$antecedente_presion_alta', antecedente_convulsiones = '$antecedente_convulsiones', 
+        antecedente_alteracion_sanguinea = '$antecedente_alteracion_sanguinea', antecedente_quemaduras_graves = '$antecedente_quemaduras_graves', antecedente_organos = '$antecedente_organos', antecedente_oncologico = '$antecedente_oncologico', antecedente_inmunodeficiencia = '$antecedente_inmunodeficiencia', antecedente_fracturas = '$antecedente_fracturas', antecedente_huesos = '$antecedente_huesos', antecedente_traumatismos = '$antecedente_traumatismos', antecedente_problemas_piel = '$antecedente_problemas_piel', 
+        ejercicio_desmayo = '$ejercicio_desmayo', ejercicio_dolor_pecho = '$ejercicio_dolor_pecho', ejercicio_mareos = '$ejercicio_mareos', ejercicio_mayor_cansancio = '$ejercicio_mayor_cansancio', ejercicio_palpitaciones = '$ejercicio_palpitaciones', ejercicio_dificultad_respirar = '$ejercicio_dificultad_respirar', internacion_comun = '$internacion_comun', internacion_intensiva = '$internacion_intensiva', cant_veces_internado = '$cant_veces_internado', causa_internacion = '$causa_internacion', 
+        antecedente_alergia_grave = '$antecedente_alergia_grave', alergia_medicamento = '$alergia_medicamento', internacion_medicamento = '$internacion_medicamento', alergia_vacuna = '$alergia_vacuna', internacion_vacuna = '$internacion_vacuna', alergia_alimento = '$alergia_alimento', internacion_alimento = '$internacion_alimento', alergia_insectos = '$alergia_insectos', internacion_insecto = '$internacion_insecto', alergia_estacional = '$alergia_estacional', 
+        internacion_estacional = '$internacion_estacional', alergia_otras = '$alergia_otras', internacion_otras = '$internacion_otras', disminucion_auditiva = '$disminucion_auditiva', usa_audifonos = '$usa_audifonos', disminucion_visual = '$disminucion_visual', usa_lentes = '$usa_lentes', recibe_medicacion = '$recibe_medicacion', tipo_medicacion = '$tipo_medicacion', recibio_operacion = '$recibio_operacion', 
+        motivo_operacion = '$motivo_operacion', fecha_operacion = '$fecha_operacion', antecedente_fam_muerte_subita = '$antecedente_fam_muerte_subita', antecedente_fam_diabetes = '$antecedente_fam_diabetes', antecedente_fam_cardiacos = '$antecedente_fam_cardiacos', antecedente_fam_tos_cronica = '$antecedente_fam_tos_cronica', antecedente_fam_celiaco = '$antecedente_fam_celiaco', establecimiento_actual_distrito = '$establecimiento_actual_distrito', establecimiento_actual_nombre = '$establecimiento_actual_nombre', establecimiento_actual_nro = '$establecimiento_actual_nro', 
+        establecimiento_actual_gestion = '$establecimiento_actual_gestion', establecimiento_procedencia_pais = '$establecimiento_procedencia_pais', establecimiento_procedencia_provincia = '$establecimiento_procedencia_provincia', establecimiento_procedencia_distrito = '$establecimiento_procedencia_distrito', establecimiento_procedencia_modalidad = '$establecimiento_procedencia_modalidad', establecimiento_procedencia_gestion = '$establecimiento_procedencia_gestion', establecimiento_procedencia_dependencia = '$establecimiento_procedencia_dependencia', establecimiento_procedencia_nombre = '$establecimiento_procedencia_nombre', establecimiento_procedencia_nro = '$establecimiento_procedencia_nro', inscripcion_modalidad = '$inscripcion_modalidad', 
+        inscripcion_orientacion = '$inscripcion_orientacion', inscripcion_turno = '$inscripcion_turno', inscripcion_jornada = '$inscripcion_jornada', inscripcion_año = '$inscripcion_año', inscripcion_condicion = '$inscripcion_condicion', inscripcion_inclusion = '$inscripcion_inclusion', tipo_inclusion = '$tipo_inclusion', inscripcion_asistente_externo = '$inscripcion_asistente_externo', complementario_centro_educativo = '$complementario_centro_educativo', complementario_educacion_fisica = '$complementario_educacion_fisica', 
+        complementario_educacion_estetica = '$complementario_educacion_estetica', servicio_alimentario = '$servicio_alimentario', url_firma_responsable = '$url_firma_responsable', aclaracion_firma = '$aclaracion_firma', fecha_inscripcion = '$fecha_inscripcion'
+        WHERE id = $id_alumno";
+
+    $sql_insertar = "INSERT INTO ficha_inscripcion (
+        nombre_alumno, apellido_alumno, fecha_nacimiento, tiene_dni_argentino, nro_dni_argentino, cuil_alumno, posee_cpi, tipo_documento_extranjero, nro_documento_extranjero, identidad_genero, 
+        calle, nro_calle, piso_torre, entre_calles, otro_dato, provincia_actual, distrito, localidad, telefono, telefono_celular, 
+        lugar_nacimiento, nacionalidad, provincia_nacimiento, distrito_BA, localidad_BA, tiene_hermanos, cantidad_hermanos, habla_lengua_indigena, habla_otras_lenguas, descendiente_originario, 
+        percibe_auh, percibe_progresar, trasporte_pie_bicicleta, trasporte_escolar, trasporte_colectivo, trasporte_tren, trasporte_particular, trasporte_taxi, transporte_otro, hijos_menores, 
+        asisten_maternal, tiene_obra_social, nombre_obra_social, nro_afiliado, antecedente_asma, antecedente_celiaquia, antecedente_cardiaco, antecedente_diabetes, antecedente_presion_alta, antecedente_convulsiones, 
+        antecedente_alteracion_sanguinea, antecedente_quemaduras_graves, antecedente_organos, antecedente_oncologico, antecedente_inmunodeficiencia, antecedente_fracturas, antecedente_huesos, antecedente_traumatismos, antecedente_problemas_piel, 
+        ejercicio_desmayo, ejercicio_dolor_pecho, ejercicio_mareos, ejercicio_mayor_cansancio, ejercicio_palpitaciones, ejercicio_dificultad_respirar, internacion_comun, internacion_intensiva, cant_veces_internado, causa_internacion, 
+        antecedente_alergia_grave, alergia_medicamento, internacion_medicamento, alergia_vacuna, internacion_vacuna, alergia_alimento, internacion_alimento, alergia_insectos, internacion_insecto, alergia_estacional, 
+        internacion_estacional, alergia_otras, internacion_otras, disminucion_auditiva, usa_audifonos, disminucion_visual, usa_lentes, recibe_medicacion, tipo_medicacion, recibio_operacion, 
+        motivo_operacion, fecha_operacion, antecedente_fam_muerte_subita, antecedente_fam_diabetes, antecedente_fam_cardiacos, antecedente_fam_tos_cronica, antecedente_fam_celiaco, establecimiento_actual_distrito, establecimiento_actual_nombre, establecimiento_actual_nro, 
+        establecimiento_actual_gestion, establecimiento_procedencia_pais, establecimiento_procedencia_provincia, establecimiento_procedencia_distrito, establecimiento_procedencia_modalidad, establecimiento_procedencia_gestion, establecimiento_procedencia_dependencia, establecimiento_procedencia_nombre, establecimiento_procedencia_nro, inscripcion_modalidad, 
+        inscripcion_orientacion, inscripcion_turno, inscripcion_jornada, inscripcion_año, inscripcion_condicion, inscripcion_inclusion, tipo_inclusion, inscripcion_asistente_externo, complementario_centro_educativo, complementario_educacion_fisica, 
+        complementario_educacion_estetica, servicio_alimentario, url_firma_responsable, aclaracion_firma, fecha_inscripcion
+    ) VALUES (
+        '$nombre_alumno', '$apellido_alumno', '$fecha_nacimiento', '$tiene_dni_argentino', '$nro_dni_argentino', '$cuil_alumno', '$posee_cpi', '$tipo_documento_extranjero', '$nro_documento_extranjero', '$identidad_genero', 
+        '$calle', '$nro_calle', '$piso_torre', '$entre_calles', '$otro_dato', '$provincia_actual', '$distrito', '$localidad', '$telefono', '$telefono_celular', 
+        '$lugar_nacimiento', '$nacionalidad', '$provincia_nacimiento', '$distrito_BA', '$localidad_BA', '$tiene_hermanos', '$cantidad_hermanos', '$habla_lengua_indigena', '$habla_otras_lenguas', '$descendiente_originario', 
+        '$percibe_auh', '$percibe_progresar', '$trasporte_pie_bicicleta', '$trasporte_escolar', '$trasporte_colectivo', '$trasporte_tren', '$trasporte_particular', '$trasporte_taxi', '$transporte_otro', '$hijos_menores', 
+        '$asisten_maternal', '$tiene_obra_social', '$nombre_obra_social', '$nro_afiliado', '$antecedente_asma', '$antecedente_celiaquia', '$antecedente_cardiaco', '$antecedente_diabetes', '$antecedente_presion_alta', '$antecedente_convulsiones', 
+        '$antecedente_alteracion_sanguinea', '$antecedente_quemaduras_graves', '$antecedente_organos', '$antecedente_oncologico', '$antecedente_inmunodeficiencia', '$antecedente_fracturas', '$antecedente_huesos', '$antecedente_traumatismos', '$antecedente_problemas_piel', 
+        '$ejercicio_desmayo', '$ejercicio_dolor_pecho', '$ejercicio_mareos', '$ejercicio_mayor_cansancio', '$ejercicio_palpitaciones', '$ejercicio_dificultad_respirar', '$internacion_comun', '$internacion_intensiva', '$cant_veces_internado', '$causa_internacion', 
+        '$antecedente_alergia_grave', '$alergia_medicamento', '$internacion_medicamento', '$alergia_vacuna', '$internacion_vacuna', '$alergia_alimento', '$internacion_alimento', '$alergia_insectos', '$internacion_insecto', '$alergia_estacional', 
+        '$internacion_estacional', '$alergia_otras', '$internacion_otras', '$disminucion_auditiva', '$usa_audifonos', '$disminucion_visual', '$usa_lentes', '$recibe_medicacion', '$tipo_medicacion', '$recibio_operacion', 
+        '$motivo_operacion', '$fecha_operacion', '$antecedente_fam_muerte_subita', '$antecedente_fam_diabetes', '$antecedente_fam_cardiacos', '$antecedente_fam_tos_cronica', '$antecedente_fam_celiaco', '$establecimiento_actual_distrito', '$establecimiento_actual_nombre', '$establecimiento_actual_nro', 
+        '$establecimiento_actual_gestion', '$establecimiento_procedencia_pais', '$establecimiento_procedencia_provincia', '$establecimiento_procedencia_distrito', '$establecimiento_procedencia_modalidad', '$establecimiento_procedencia_gestion', '$establecimiento_procedencia_dependencia', '$establecimiento_procedencia_nombre', '$establecimiento_procedencia_nro', '$inscripcion_modalidad', 
+        '$inscripcion_orientacion', '$inscripcion_turno', '$inscripcion_jornada', '$inscripcion_año', '$inscripcion_condicion', '$inscripcion_inclusion', '$tipo_inclusion', '$inscripcion_asistente_externo', '$complementario_centro_educativo', '$complementario_educacion_fisica', 
+        '$complementario_educacion_estetica', '$servicio_alimentario', '$url_firma_responsable', '$aclaracion_firma', '$fecha_inscripcion'
+    )";
+try {
+    if ($id_alumno) {
+        if (mysqli_query($conexion, $sql_modificar)) {
+            echo "Registro actualizado correctamente.";
+        } else {
+            $error = "Error al actualizar el registro: " . mysqli_error($conexion);
+            logError($error);
+            echo $error;
+        }
     } else {
-        $sql_estado_anexo = "INSERT INTO estado_anexo (fk_alumno, anexo_2) VALUES ((SELECT id_alumno FROM lista_alumnos WHERE dni = '$nro_dni_argentino'), 'si')";
+        if (mysqli_query($conexion, $sql_insertar)) {
+            echo "Registro insertado correctamente.";
+            $sql_check = "SELECT id FROM estado_anexo WHERE fk_alumno = (SELECT id_alumno FROM lista_alumnos WHERE dni = '$nro_dni_argentino')";
+            $result_check = mysqli_query($conexion, $sql_check);
+            if (mysqli_num_rows($result_check) > 0) {
+                $sql_estado_anexo = "UPDATE estado_anexo SET anexo_2 = 'si' WHERE fk_alumno = (SELECT id_alumno FROM lista_alumnos WHERE dni = '$nro_dni_argentino')";
+            } else {
+                $sql_estado_anexo = "INSERT INTO estado_anexo (fk_alumno, anexo_2) VALUES ((SELECT id_alumno FROM lista_alumnos WHERE dni = '$nro_dni_argentino'), 'si')";
+            }
+            if (mysqli_query($conexion, $sql_estado_anexo)) {
+                echo " Estado del anexo 2 actualizado correctamente.";
+            } else {
+                $error_estado = "Error al actualizar el estado del anexo 2: " . mysqli_error($conexion);
+                logError($error_estado);
+                echo $error_estado;
+            }
+        } else {
+            $error = "Error al insertar el registro: " . mysqli_error($conexion);
+            logError($error);
+            echo $error;
+        }
     }
-    if (mysqli_query($conn, $sql_estado_anexo)) {
-        echo " Estado del anexo 2 actualizado correctamente.";
-    } else {
-        $error_estado = "Error al actualizar el estado del anexo 2: " . mysqli_error($conn);
-        logError($error_estado);
-        echo $error_estado;
-    }
-} else {
-    $error = "Error al insertar el registro: " . mysqli_error($conn);
-    logError($error);
-    echo $error;
-}
-
 } catch (Exception $e) {
-logError("Excepción capturada: " . $e->getMessage());
-echo "Error: " . $e->getMessage();
+    logError("Excepción capturada: " . $e->getMessage());
+    echo "Error: " . $e->getMessage();
 } finally {
-mysqli_close($conn);
+    mysqli_close($conexion);
 }
 ?>

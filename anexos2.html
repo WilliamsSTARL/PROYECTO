@@ -53,10 +53,9 @@
                     
                 </div><br><br>
             </div>
-
             <div class="col-sm-9">
                 <div class="scrollable-div">
-                <form method="post" action="anexo2.php" enctype="multipart/form-data">
+                <form method="post" id="formulario" enctype="multipart/form-data">
                     <h3>Ficha de inscripcion</h3>
                     <hr>
                     <div class="row">
@@ -1643,7 +1642,11 @@
                         </div>
 
                     </div>
-                    <center><button type="submit" class="logbtn">ENVIAR</button></center>
+                    <div id="acciones_alumno" class="acciones_alumno" >
+                        <button type="button" class="btn btn-danger" id="eliminar_alumno">Eliminar</button>
+                        <button type="submit" class="btn btn-dark" id="modificar_alumno">Modificar</button>
+                    </div>
+                    <center><button type="submit" id="logbtn" class="logbtn">ENVIAR</button></center>
                 </form>
             </div>
         </div>    
@@ -1654,4 +1657,62 @@
 <script src="js/anexo2.js"></script>
 <script>
     window.onload = cargarDatosAlumno;
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let idAlumno = new URLSearchParams(window.location.search).get('usuario_id');
+        document.getElementById('eliminar_alumno').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevenir la recarga de la página
+            if (confirm('¿Estás seguro de que deseas eliminar este anexo?')) {
+                fetch('php/eliminar_anexo.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'id_alumno=' + idAlumno + '&anexo=2'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Anexo eliminado correctamente.');
+                    location.reload()
+                })
+                .catch(error => {
+                    alert('Error al eliminar el anexo.');
+                });
+            }
+        });
+
+        document.getElementById('modificar_alumno').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevenir la recarga de la página
+            const formulario = document.getElementById('formulario');
+            idAlumno = new URLSearchParams(window.location.search).get('usuario_id');
+            const formData = new FormData(formulario);
+            
+            formData.append('id_alumno', idAlumno);
+            console.log(idAlumno)
+
+            fetch('anexo2.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Anexo modificado correctamente.');
+                    location.reload()
+                } else {
+                    throw new Error('Error en la solicitud de modificación.');
+                }
+            })
+            .catch(error => {
+                alert('Error al modificar el anexo: ' + error.message);
+            });
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const accionesAlumno = document.getElementById('acciones_alumno');
+        const botonEnviar = document.getElementById('logbtn');
+
+        accionesAlumno.style.display = idAlumno ? 'block' : 'none';
+        botonEnviar.style.display = idAlumno ? 'none' : 'block';
+    });
 </script>

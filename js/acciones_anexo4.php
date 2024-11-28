@@ -1,5 +1,5 @@
 <?php
-include 'conexion.php';  
+include '../conexion.php';  
 
 if (isset($_GET['alumno_id'])) {
     $alumno_id = $_GET['alumno_id'];

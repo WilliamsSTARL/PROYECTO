@@ -105,20 +105,6 @@ $result = $conn->query($sql);
             </div>
 
             <div class="show d-flex flex-wrap justify-content-center align-items-center">
-            <form action="pdf1.php" method="post">
-                <button type="submit">Descargar PDF 4</button>
-            </form>
-            <form action="pdf4.php" method="post">
-                <button type="submit">Descargar PDF 1</button>
-            </form>
-            <form action="pdf3.php" method="post">
-                <button type="submit">Descargar PDF 3</button>
-                <h5>Ficha de Salud y autorizacion para hacer Educacion Fisica</h5>
-            </form>
-            <form action="pdf2.php" method="post">
-                <button type="submit">Descargar PDF 2</button>
-                <h5>Ficha de inscripcion</h5>
-            </form>
             <?php
                 if ($result->num_rows > 0) {
                     while ($fila = $result->fetch_assoc()) {
@@ -165,16 +151,11 @@ $result = $conn->query($sql);
                                                 <p><strong>Anexos:</strong></p>
                                                 <div class="d-flex flex-wrap justify-content-center align-items-center">';
                                                 for ($i = 1; $i <= 4; $i++) {
-                                                    if ($i == 4) {
-                                                        $archivo = "anexos5.html?usuario_id=" . $id_alumno;
+                                                    $archivo = "anexos" . ($i == 4 ? "5" : ($i == 1 ? "" : $i)) . ".html?usuario_id=" . $id_alumno;
+                                                    if (isset($anexos_data['anexo_' . $i]) && $anexos_data['anexo_' . $i] == 'si') {
+                                                        echo '<a href="' . $archivo . '" class="btn btn-info m-1">Anexo ' . $i . '</a>';
                                                     } else {
-                                                        $archivo = "anexos" . ($i == 1 ? "" : $i) . ".html?usuario_id=" . $id_alumno;
-                                                    }
-                                                    $nombreAnexo = ($i == 1) ? "Legajo" : (($i == 2) ? "Ficha de inscripción" : "Anexo " . $i);
-                                                    if ($anexos_data['anexo_' . $i] == 'si') {
-                                                        echo '<a href="' . $archivo . '" class="btn btn-info m-1">' . $nombreAnexo . '</a>';
-                                                    } elseif ($anexos_data['anexo_' . $i] == 'no') {
-                                                        echo '<button class="btn btn-secondary m-1" disabled>' . $nombreAnexo . ' (No disponible)</button>';
+                                                        echo '<button class="btn btn-secondary m-1" disabled>Anexo ' . $i . ' (No disponible)</button>';
                                                     }
                                                 }
                                                 echo '</div>
